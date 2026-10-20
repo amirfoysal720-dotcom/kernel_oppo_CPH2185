@@ -14,7 +14,7 @@ jobs:
     - name: Setup Build Environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential bc bison flex libssl-dev libncurses5-dev libncursesw5-dev libglib2.0-dev zip git liblz4-tool python3
+        sudo apt-get install -y build-essential bc bison flex libssl-dev libncurses5-dev libncursesw5-dev libglib2.0-dev zip git liblz4-tool python3 curl
 
     - name: Download Toolchains
       run: |
@@ -33,7 +33,11 @@ jobs:
         export CROSS_COMPILE_ARM32=$(pwd)/gcc32/bin/arm-linux-androideabi-
         
         make O=out CPH2185_defconfig
-        make -j$(nproc) O=out
+        make -j$(nproc) O=out || make -j1 O=out
+
+    - name: Check Kernel Image Output
+      run: |
+        ls -la out/arch/arm64/boot/
 
     - name: Upload Kernel Artifact
       uses: actions/upload-artifact@v4
